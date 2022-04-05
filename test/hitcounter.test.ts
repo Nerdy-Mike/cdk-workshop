@@ -18,3 +18,18 @@ test('DynamoDB Table Created', () => {
   const template = Template.fromStack(stack);
   template.resourceCountIs("AWS::DynamoDB::Table", 1);
 });
+
+test('read capacity can be configured', () => {
+    const stack = new cdk.Stack();
+  
+    expect(() => {
+      new HitCounter(stack, 'MyTestConstruct', {
+        downstream:  new lambda.Function(stack, 'TestFunction', {
+          runtime: lambda.Runtime.NODEJS_14_X,
+          handler: 'hello.handler',
+          code: lambda.Code.fromAsset('lambda')
+        }),
+        readCapacity: 1
+      });
+    }).toThrowError(/readCapacity must be greater than 5 and less than 20/);
+  });
